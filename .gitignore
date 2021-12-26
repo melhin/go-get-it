@@ -1,0 +1,20 @@
+# Logs
+logs
+*.log
+
+# env
+.env
+.test_env
+
+# Binaries, plugins, libs
+*.dll
+*.dylib
+*.exe
+*.exe~
+*.so
+
+# Testing
+*.test
+*.tmp
+
+.vscode

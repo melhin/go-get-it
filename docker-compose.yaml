@@ -1,0 +1,23 @@
+version: '3'
+services:
+    db:
+      image: "postgres" # use latest official postgres version
+      environment:
+          POSTGRES_USER: ${DB_USERNAME}
+          POSTGRES_PASSWORD:  ${DB_PASSWORD}
+          POSTGRES_DB: ${DB_NAME}
+      volumes:
+        - database:/var/lib/postgresql/data
+      ports:
+        - "5432:5432"
+
+    redis:
+        container_name: ${DOCKER_PROJECT_NAME}_redis_cache
+        image: redis:alpine
+        ports:
+            - 6379:6379
+        volumes:
+            - rediscache:/data
+volumes:
+    rediscache:
+    database:
