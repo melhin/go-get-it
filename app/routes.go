@@ -14,20 +14,7 @@ func (a *App) InitializeRoutes() {
 
 	// Routing for auth
 	a.Post("/login", a.HandleRequest(controllers.Login))
-
-	// Routing for handling the users
-	// a.Get("/users", a.HandleRequest(controllers.GetAllUsers))
-	// a.Post("/users", a.HandleRequest(controllers.CreateUser))
-	// a.Get("/users/{id:[0-9]+}", a.HandleRequest(controllers.GetUserById))
-	// a.Put("/users/{id:[0-9]+}", a.HandleRequest(controllers.UpdateUser))
-	// a.Delete("/users/{id:[0-9]+}", a.HandleRequest(controllers.DeleteUser))
-
-	// // Routing for handling the posts
-	// a.Get("/posts", a.HandleRequest(controllers.GetAllPosts))
-	// a.Post("/posts", a.HandleRequest(controllers.CreatePost))
-	// a.Get("/posts/{id:[0-9]+}", a.HandleRequest(controllers.GetPostById))
-	// a.Put("/posts/{id:[0-9]+}", middlewares.SetMiddlewareAuthentication(a.HandleRequest(controllers.UpdatePost)))
-	// a.Delete("/posts/{id:[0-9]+}", middlewares.SetMiddlewareAuthentication(a.HandleRequest(controllers.DeletePost)))
+	a.Post("/signup", a.HandleRequest(controllers.SignUp))
 }
 
 // wraps the router for GET method

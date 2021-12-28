@@ -135,3 +135,28 @@ func (u *User) DeleteAUser(db *gorm.DB, uid uint32) (int64, error) {
 	}
 	return db.RowsAffected, nil
 }
+
+func FindUserByUserName(db *gorm.DB, username string) (*User, error) {
+	user := &User{}
+	err := db.Model(User{}).Where("username = ?", username).First(&user).Error
+	if err != nil {
+		return user, err
+	}
+	if errors.Is(db.Error, gorm.ErrRecordNotFound) {
+		return user, errors.New("User Not Found")
+	}
+	return user, err
+}
+
+func UserExist(db *gorm.DB, username string) (bool, error) {
+	user := &User{}
+	err := db.Model(User{}).Where("username = ?", username).First(&user).Error
+	if err == nil {
+		return true, err
+	}
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return false, nil
+	} else {
+		return false, err
+	}
+}

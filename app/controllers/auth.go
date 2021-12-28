@@ -57,3 +57,38 @@ func SignIn(db *gorm.DB, username string, password string) (string, error) {
 	}
 	return auth.CreateToken(user.ID)
 }
+
+func SignUp(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		RespondError(w, http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	user := models.User{}
+	err = json.Unmarshal(body, &user)
+	if err != nil {
+		RespondError(w, http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+	user.Prepare()
+	exist, err := models.UserExist(db, user.Username)
+	if err != nil {
+		RespondError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	if exist {
+		RespondError(w, http.StatusBadRequest, "Username exist")
+		return
+	}
+	if err != nil {
+		RespondError(w, http.StatusBadRequest, "Crashed before save")
+		return
+	}
+	_, err = user.CreateUser(db)
+	if err != nil {
+		RespondError(w, http.StatusBadRequest, "Saving user fails")
+		return
+	}
+	RespondJSON(w, http.StatusCreated, nil)
+}
