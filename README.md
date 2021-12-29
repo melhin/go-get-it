@@ -1,17 +1,11 @@
-##AIM
-
-Built an encrypted end to end chat with minimum user information footprint
+Bolier plate Go app that is structured and can be extended. For now just has users and a jwt token creation and validation mechanism. Mainly
+uses gorilla and gorm
 
 ### Actions in general
 - registration
 - login
-- find people using avatar name
-- chat and file sending using storage public gpg encryption
-- Messages and files are stored encrypted
+- token validations
 
-### Considerations:
-- Only API in the first phase 
-- Lets just store everything in the database
-- Search also in the database
-- request to chat/block [Next version]
-- No Group chats as of now (lets think about it later)
+### Tests
+- Everything is integration test
+- Writing wrappers for db transaction tests and route serving db transaction test

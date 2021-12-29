@@ -11,8 +11,16 @@ import (
 	"strings"
 	"time"
 
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/spf13/cast"
+
+	jwt "github.com/golang-jwt/jwt"
 )
+
+type UserTokenDetails struct {
+	UserId     int  `json:"user_id"`
+	Authorized bool `json:"authorized"`
+	Expires    int  `json:"expires"`
+}
 
 func CreateToken(user_id uint32) (string, error) {
 	claims := jwt.MapClaims{}
@@ -69,6 +77,38 @@ func ExtractTokenID(r *http.Request) (uint32, error) {
 		return uint32(uid), nil
 	}
 	return 0, nil
+}
+
+func ExtractTokenDetails(r *http.Request) (UserTokenDetails, error) {
+
+	tokenString := ExtractToken(r)
+	userDetails := UserTokenDetails{}
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return jwt.MapClaims{}, errors.New("unexpected signing method")
+		}
+		return []byte(os.Getenv("JWT_PRIVATE_KEY")), nil
+	})
+	if err != nil {
+		return userDetails, err
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if ok {
+		uid, err := strconv.Atoi(fmt.Sprintf("%.0f", claims["user_id"]))
+		if err != nil {
+			return userDetails, err
+		}
+		authorized, err := cast.ToBoolE(claims["authorized"])
+		if err != nil {
+			return userDetails, err
+		}
+		expires, err := cast.ToIntE(claims["exp"])
+		if err != nil {
+			return userDetails, err
+		}
+		return UserTokenDetails{UserId: uid, Authorized: authorized, Expires: expires}, nil
+	}
+	return userDetails, errors.New("no claims")
 }
 
 // display the claims nicely in the terminal

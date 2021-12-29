@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"go-get-it/app/controllers"
+	"go-get-it/middlewares"
 
 	"gorm.io/gorm"
 )
@@ -15,6 +16,7 @@ func (a *App) InitializeRoutes() {
 	// Routing for auth
 	a.Post("/login", a.HandleRequest(controllers.Login))
 	a.Post("/signup", a.HandleRequest(controllers.SignUp))
+	a.Get("/secret", middlewares.SetMiddlewareAuthentication(a.HandleRequest(controllers.SecretView)))
 }
 
 // wraps the router for GET method

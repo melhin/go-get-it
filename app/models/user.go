@@ -3,7 +3,6 @@ package models
 import (
 	"errors"
 	"html"
-	"log"
 	"strings"
 	"time"
 
@@ -98,54 +97,6 @@ func (u *User) FindUserByID(db *gorm.DB, uid uint32) (*User, error) {
 		return &User{}, errors.New("User Not Found")
 	}
 	return u, err
-}
-
-func (u *User) UpdateAUser(db *gorm.DB, uid uint32) (*User, error) {
-
-	// To hash the password before saving data
-	err := u.BeforeSave(db)
-	if err != nil {
-		log.Fatal(err)
-	}
-	db = db.Model(&User{}).Where("id = ?", uid).Take(&User{}).UpdateColumns(
-		map[string]interface{}{
-			"name":       u.Name,
-			"username":   u.Username,
-			"password":   u.Password,
-			"updated_at": time.Now(),
-		},
-	)
-	if db.Error != nil {
-		return &User{}, db.Error
-	}
-	// This is the display the updated user
-	err = db.Model(&User{}).Where("id = ?", uid).Take(&u).Error
-	if err != nil {
-		return &User{}, err
-	}
-	return u, nil
-}
-
-func (u *User) DeleteAUser(db *gorm.DB, uid uint32) (int64, error) {
-
-	db = db.Model(&User{}).Where("id = ?", uid).Take(&User{}).Delete(&User{})
-
-	if db.Error != nil {
-		return 0, db.Error
-	}
-	return db.RowsAffected, nil
-}
-
-func FindUserByUserName(db *gorm.DB, username string) (*User, error) {
-	user := &User{}
-	err := db.Model(User{}).Where("username = ?", username).First(&user).Error
-	if err != nil {
-		return user, err
-	}
-	if errors.Is(db.Error, gorm.ErrRecordNotFound) {
-		return user, errors.New("User Not Found")
-	}
-	return user, err
 }
 
 func UserExist(db *gorm.DB, username string) (bool, error) {
